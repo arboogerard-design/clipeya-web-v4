@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Clipeya AI Lab</title>
-<meta name="description" content="Webs, tiendas, CRM y chat para negocios que venden online. Una página de producto para el móvil, lista en 3 días.">
+<meta name="description" content="Webs, tiendas, CRM, chat y automatizaciones para negocios que venden online. Una página de producto para el móvil, lista en 3 días.">
 <meta name="theme-color" content="#0d0c0b">
 <link rel="icon" href="img/clipeya_spark_favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,10 +22,17 @@
   --panel:#151411;
   --papel:#ece7de;
   --gris:#aaa398;
+  --gris-claro:#cfc8bb;
   --acento:#ff4d1f;
   --acento-hondo:#e23f12;
   --linea:rgba(236,231,222,.22);
-  --velo-fuerte:rgba(13,12,11,.9);
+  --linea-suave:rgba(236,231,222,.12);
+  --v92:rgba(13,12,11,.92);
+  --v90:rgba(13,12,11,.9);
+  --v80:rgba(13,12,11,.8);
+  --v78:rgba(13,12,11,.78);
+  --v55:rgba(13,12,11,.55);
+  --v45:rgba(13,12,11,.45);
   --velo-medio:rgba(13,12,11,.5);
   --velo-nada:rgba(13,12,11,0);
   --f-display:"Instrument Serif",Georgia,"Times New Roman",serif;
@@ -33,6 +40,7 @@
   --curva:cubic-bezier(.16,.84,.24,1);
   --margen:clamp(16px,5vw,72px);
   --ancho:1280px;
+  interpolate-size:allow-keywords;
 }
 *{box-sizing:border-box}
 html,body{overflow-x:clip}
@@ -45,63 +53,170 @@ a{color:inherit}
 #respaldo{background:var(--tinta) url(img/respaldo.jpg) center/cover no-repeat}
 #escena{display:block;opacity:0;transition:opacity 1.4s var(--curva)}
 #escena.lista{opacity:1}
-.velo{position:fixed;inset:0;pointer-events:none;background:linear-gradient(to top,var(--velo-fuerte) 0%,var(--velo-medio) 34%,var(--velo-nada) 62%)}
-@media (min-width:900px){.velo{background:linear-gradient(90deg,var(--velo-fuerte) 0%,var(--velo-fuerte) 22%,var(--velo-medio) 40%,var(--velo-nada) 58%),linear-gradient(to top,var(--velo-medio) 0%,var(--velo-nada) 30%)}}
+.velo{position:fixed;inset:0;pointer-events:none;background:linear-gradient(to top,var(--v92) 0%,var(--v78) 26%,var(--v55) 38%,var(--velo-nada) 48%)}
+@media (min-width:900px){.velo{background:linear-gradient(90deg,var(--v90) 0%,var(--v90) 24%,var(--v45) 38%,var(--velo-nada) 46%),linear-gradient(to top,var(--velo-medio) 0%,var(--velo-nada) 30%)}}
 .velo,.velo-portada{transition:opacity .8s var(--curva)}
 .velo-portada{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 62% 50% at 50% 64%,var(--velo-medio) 0%,var(--velo-nada) 100%),linear-gradient(to top,var(--velo-medio) 0%,var(--velo-nada) 28%)}
 .en-portada .velo{opacity:0}
 .en-portada .velo-portada{opacity:1}
+.velo-arriba{position:fixed;left:0;right:0;top:0;height:136px;z-index:3;pointer-events:none;background:linear-gradient(to bottom,var(--v92) 0%,var(--v92) 42%,var(--v55) 72%,var(--velo-nada) 100%)}
 
-.cabecera{position:fixed;top:0;left:0;right:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:20px var(--margen);max-width:calc(var(--ancho) + 2 * var(--margen));margin:0 auto}
+.cabecera{position:fixed;top:0;left:0;right:0;z-index:4;display:flex;justify-content:space-between;align-items:center;padding:20px var(--margen);max-width:calc(var(--ancho) + 2 * var(--margen));margin:0 auto}
 .cabecera img{height:26px;width:auto;display:block}
-.cabecera a.hablar{font-size:15px;font-weight:600;text-decoration:none;padding:8px 16px;border:1px solid var(--linea);border-radius:999px;transition:background-color .3s var(--curva),border-color .3s var(--curva)}
+.cabecera a.hablar{font-size:15px;font-weight:600;text-decoration:none;padding:8px 16px;border:1px solid var(--linea);border-radius:999px;background-color:var(--v78);transition:background-color .3s var(--curva),border-color .3s var(--curva),color .3s var(--curva)}
 .cabecera a.hablar:hover{background-color:var(--papel);color:var(--tinta);border-color:var(--papel)}
 
 main{position:relative;z-index:2}
-.pantalla{min-height:100svh;display:flex;align-items:flex-end;padding:96px var(--margen) clamp(32px,8vh,88px);max-width:calc(var(--ancho) + 2 * var(--margen));margin:0 auto}
+.pantalla{position:relative;min-height:100svh;display:flex;align-items:flex-end;padding:96px var(--margen) clamp(32px,8vh,88px);max-width:calc(var(--ancho) + 2 * var(--margen));margin:0 auto}
 @media (min-width:900px){.pantalla{align-items:center}}
-.caja{max-width:33rem;min-width:0}
+.caja{position:relative;max-width:33rem;min-width:0}
+.caja::before{content:"";position:absolute;inset:-14% -22%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,var(--v55) 0%,var(--velo-nada) 100%)}
+@media (min-width:900px){.obra .caja{max-width:min(28rem,36vw)}}
 .portada{justify-content:center;text-align:center;align-items:center}
 .portada .caja{max-width:52rem;margin-top:22vh}
+.portada .caja::before{inset:-6% -4%;background:radial-gradient(closest-side,var(--v78) 0%,var(--v55) 55%,var(--velo-nada) 100%)}
 @media (min-width:900px){.portada .caja{margin-top:30vh}}
 
-h1,h2{font-family:var(--f-display);font-weight:400;margin:0 0 .28em;overflow-wrap:break-word;min-width:0;text-wrap:balance}
-h1{font-size:clamp(52px,9.4vw,128px);line-height:.92;letter-spacing:-.025em}
-h2{font-size:clamp(44px,6.6vw,92px);line-height:.96;letter-spacing:-.02em}
-.frase{font-size:clamp(17px,1.35vw,20px);margin:0 0 1.4em;max-width:30em;text-wrap:pretty}
+h1,h2,h3,h4{font-weight:400;margin:0;overflow-wrap:break-word;min-width:0;text-wrap:balance}
+h1,h2,h3{font-family:var(--f-display)}
+h1{font-size:clamp(52px,8.2vw,112px);line-height:.92;letter-spacing:-.025em;margin-bottom:.28em}
+h2{font-size:clamp(44px,5.2vw,80px);line-height:.96;letter-spacing:-.02em;margin-bottom:.32em}
+h3{font-size:clamp(28px,2.6vw,38px);line-height:1.05;letter-spacing:-.01em}
+h4{font:600 18px/1.3 var(--f-texto)}
+.frase{font-size:clamp(18px,1.55vw,24px);line-height:1.5;margin:0 0 1.3em;max-width:30em;text-wrap:pretty}
 .portada .frase{margin-left:auto;margin-right:auto;max-width:34em}
-.pie{color:var(--gris);font-size:15px;margin:0}
+.pie{color:var(--gris-claro);font-size:16px;margin:0}
+@media (min-width:900px){.pie{font-size:17px}}
 .pie a{color:var(--papel);text-underline-offset:3px}
 
+.rotulo{display:none}
+@media (min-width:900px){
+  .rotulo{display:block;position:absolute;left:67%;bottom:clamp(20px,4.5vh,52px);transform:translate(-50%,0);margin:0;font:400 clamp(34px,3.2vw,52px)/1 var(--f-display);letter-spacing:-.01em;color:var(--papel);opacity:.94;pointer-events:none;white-space:nowrap;transition:opacity 1s var(--curva) .35s,transform 1s var(--curva) .35s}
+  .js .rotulo{opacity:0;transform:translate(-50%,12px)}
+  .js .visto .rotulo{opacity:.94;transform:translate(-50%,0)}
+  .rotulo span{font:400 15px/1 var(--f-texto);color:var(--gris-claro);margin-left:16px;vertical-align:middle}
+}
+
 .acciones{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.boton{display:inline-flex;align-items:center;min-height:48px;padding:0 24px;border-radius:999px;font:600 16px/1 var(--f-texto);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .35s var(--curva),background-color .35s var(--curva),border-color .35s var(--curva)}
+.boton{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:999px;font:600 16px/1 var(--f-texto);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .35s var(--curva),background-color .35s var(--curva),border-color .35s var(--curva),color .35s var(--curva)}
 .boton{background-color:var(--acento);color:var(--tinta)}
 .boton:hover{background-color:var(--acento-hondo);transform:translateY(-2px)}
 .boton.claro{background-color:transparent;color:var(--papel);border-color:var(--linea)}
-.boton.claro:hover{border-color:var(--papel)}
+.boton.claro:hover{border-color:var(--papel);background-color:var(--papel);color:var(--tinta)}
 .boton:active{transform:translateY(0) scale(.98)}
 .boton:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
-form.enlace{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+/* pantallas anchas (servicios y cómo): un panel de cristal propio para que el 3D no moleste a la lectura */
+.ancha{align-items:flex-start}
+@media (min-width:900px){.ancha{align-items:center}}
+.ancha .caja{max-width:70rem;width:100%;background-color:var(--v80);border:1px solid var(--linea-suave);border-radius:24px;padding:clamp(24px,3.4vw,48px)}
+.ancha .caja::before{display:none}
+.ancha h2{max-width:14em}
+
+/* servicios */
+.fichas{margin-top:clamp(20px,2.4vw,28px)}
+.cab-fichas{display:none}
+.ficha{border-top:1px solid var(--linea)}
+.ficha:last-child{border-bottom:1px solid var(--linea)}
+.ficha summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1fr 32px;column-gap:16px;row-gap:2px;align-items:center;padding:16px 0;transition:color .3s var(--curva)}
+.ficha summary::-webkit-details-marker{display:none}
+.ficha .nombre{font:400 clamp(26px,2.3vw,32px)/1.1 var(--f-display)}
+.ficha .col{display:none}
+.ficha .resumen{grid-column:1;color:var(--gris-claro);font-size:16px}
+.ficha .mas{grid-column:2;grid-row:1 / span 2;justify-self:end;position:relative;width:32px;height:32px;border:1px solid var(--linea);border-radius:50%;transition:transform .45s var(--curva),background-color .3s var(--curva),border-color .3s var(--curva)}
+.ficha .mas::before,.ficha .mas::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;background-color:var(--papel);transform:translate(-50%,-50%)}
+.ficha .mas::after{transform:translate(-50%,-50%) rotate(90deg)}
+.ficha summary:hover .mas{border-color:var(--papel)}
+.ficha[open] .mas{transform:rotate(45deg);background-color:var(--acento);border-color:var(--acento)}
+.ficha[open] .mas::before,.ficha[open] .mas::after{background-color:var(--tinta)}
+.ficha::details-content{block-size:0;overflow:clip;transition:block-size .5s var(--curva),content-visibility .5s allow-discrete}
+.ficha[open]::details-content{block-size:auto}
+@media (min-width:900px){
+  .cab-fichas,.ficha summary{grid-template-columns:1.05fr 1.25fr 1fr 1fr 32px;column-gap:20px}
+  .cab-fichas{display:grid;padding:0 0 12px;color:var(--gris-claro);font-size:15px}
+  .ficha .col{display:block;font-size:17px;color:var(--gris-claro)}
+  .ficha .empieza{color:var(--papel)}
+  .ficha .resumen{display:none}
+  .ficha .mas{grid-column:5;grid-row:1}
+  .ficha summary:hover .nombre{color:var(--acento)}
+}
+.detalle{padding:4px 0 28px}
+.para{font-size:18px;margin:0 0 20px;max-width:40em}
+.packs{display:grid;gap:28px}
+@media (min-width:760px){.packs{grid-template-columns:1fr 1fr;gap:0}.pack + .pack{border-left:1px solid var(--linea);padding-left:32px}.pack:first-child{padding-right:32px}}
+.pack .letra{margin:0 0 4px;color:var(--acento);font-size:15px;font-weight:600}
+.pack h3{font:400 clamp(26px,2.2vw,30px)/1.1 var(--f-display);margin-bottom:8px}
+.pack .uso{margin:0 0 16px;color:var(--gris-claro);font-size:16px}
+.pack .precio{margin:0 0 16px;font-weight:600}
+.pack ul,.sueltos ul{margin:0 0 16px;padding:0;list-style:none}
+.pack li,.sueltos li{position:relative;padding-left:20px;margin:0 0 8px;font-size:17px;line-height:1.45}
+.pack li::before,.sueltos li::before{content:"";position:absolute;left:2px;top:.62em;width:8px;height:1.5px;background-color:var(--acento)}
+.pack .mes{margin:0 0 20px;font-size:16px;color:var(--gris-claro)}
+.pack .mes strong{color:var(--papel);font-weight:600}
+.nota{margin:24px 0 0;font-size:16px;color:var(--gris-claro)}
+.sueltos{display:grid;gap:24px 32px;margin-bottom:20px}
+@media (min-width:760px){.sueltos{grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}}
+.sueltos h3{font:600 18px/1.3 var(--f-texto);margin-bottom:12px}
+.sueltos .cifra{color:var(--acento);font-weight:600;white-space:nowrap}
+.llevado{display:grid;gap:12px;margin-top:clamp(24px,3vw,36px);padding-top:clamp(20px,2.6vw,28px);border-top:1px solid var(--linea)}
+@media (min-width:900px){.llevado{grid-template-columns:14rem 1fr auto;align-items:center;gap:28px}}
+.llevado p{margin:0;font-size:17px;color:var(--gris-claro);max-width:40em}
+
+/* cómo trabajamos y quiénes somos */
+.pasos{list-style:none;margin:clamp(20px,2.4vw,32px) 0 0;padding:0;display:grid;gap:24px;counter-reset:paso}
+@media (min-width:900px){.pasos{grid-template-columns:repeat(4,1fr);gap:32px}}
+.pasos li{counter-increment:paso;border-top:1px solid var(--linea);padding-top:16px}
+.pasos li::before{content:counter(paso);display:block;font:400 clamp(40px,3.6vw,54px)/1 var(--f-display);color:var(--acento);margin-bottom:12px}
+.pasos h3{font-size:clamp(24px,2vw,28px);margin-bottom:8px}
+.pasos p{margin:0;font-size:17px;color:var(--gris-claro)}
+.siempre{margin:clamp(24px,3vw,36px) 0 0;font-size:17px;color:var(--gris-claro);max-width:52em}
+.siempre strong{color:var(--papel);font-weight:600}
+.somos{display:flex;gap:20px;align-items:center;margin-top:clamp(24px,3vw,36px);padding-top:clamp(20px,2.6vw,28px);border-top:1px solid var(--linea)}
+.somos img{width:44px;height:44px;flex:none}
+.somos p{margin:0;font-size:18px;max-width:44em}
+.somos strong{font-weight:600}
+
+/* cierre: formulario y dudas */
+form.enlace{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
 form.enlace input{flex:1 1 15rem;min-width:0;min-height:48px;padding:0 20px;border-radius:999px;border:1px solid var(--linea);background-color:var(--panel);color:var(--papel);font:400 16px/1 var(--f-texto)}
 form.enlace input::placeholder{color:var(--gris)}
 form.enlace input:focus-visible{outline-offset:2px}
+/* móvil y tablet: el cierre es más alto que la pantalla; el texto empieza debajo de la pared vacía y va en panel oscuro para que, al bajar a las dudas, no se lea encima del marco */
+@media (max-width:899px){
+  #empezar{align-items:flex-start;padding-top:56svh}
+  #empezar .caja{width:100%;max-width:40rem;background-color:var(--panel);border:1px solid var(--linea-suave);border-radius:24px;padding:24px}
+  #empezar .caja::before{display:none}
+}
+.otra{display:inline-block;margin:0 0 16px;font-size:16px;color:var(--gris-claro);text-underline-offset:3px}
+.otra:hover{color:var(--papel)}
 .error{color:var(--acento);font-size:15px;margin:0 0 12px}
 .oculto{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dudas{margin-top:clamp(28px,4vh,44px)}
+.dudas h3{margin-bottom:8px}
+.duda{border-top:1px solid var(--linea)}
+.duda:last-child{border-bottom:1px solid var(--linea)}
+.duda summary{list-style:none;cursor:pointer;padding:16px 32px 16px 0;position:relative;font-size:18px;font-weight:600}
+.duda summary::-webkit-details-marker{display:none}
+.duda summary::after{content:"";position:absolute;right:6px;top:50%;width:9px;height:9px;border-right:1.5px solid var(--papel);border-bottom:1.5px solid var(--papel);transform:translateY(-70%) rotate(45deg);transition:transform .4s var(--curva)}
+.duda[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+.duda p{margin:0 0 16px;font-size:17px;color:var(--gris-claro)}
+.duda::details-content{block-size:0;overflow:clip;transition:block-size .45s var(--curva),content-visibility .45s allow-discrete}
+.duda[open]::details-content{block-size:auto}
 
 .avance{position:fixed;right:var(--margen);top:50%;z-index:3;display:none;flex-direction:column;gap:12px;transform:translateY(-50%)}
 @media (min-width:900px){.avance{display:flex}}
-.avance a{display:block;width:2px;height:44px;background-color:var(--linea);transform:scaleY(.6);transition:background-color .4s var(--curva),transform .4s var(--curva)}
+.avance a{display:block;width:2px;height:40px;background-color:var(--linea);transform:scaleY(.6);transition:background-color .4s var(--curva),transform .4s var(--curva)}
 .avance a[aria-current="true"]{background-color:var(--acento);transform:none}
 
 .js .caja > *{opacity:0;transform:translateY(22px);transition:opacity .9s var(--curva),transform .9s var(--curva)}
 .js .caja > *:nth-child(2){transition-delay:.08s}
 .js .caja > *:nth-child(3){transition-delay:.16s}
-.js .caja > *:nth-child(4){transition-delay:.24s}
+.js .caja > *:nth-child(n+4){transition-delay:.24s}
 .js .visto .caja > *{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  #escena,.boton,.avance a,.cabecera a.hablar{transition:none}
+  #escena,.boton,.avance a,.cabecera a.hablar,.ficha .mas,.rotulo{transition:none}
+  .ficha::details-content,.duda::details-content{transition:none}
   .js .caja > *{opacity:1;transform:none;transition:none}
 }
 </style>
@@ -111,6 +226,7 @@ form.enlace input:focus-visible{outline-offset:2px}
 <canvas id="escena" aria-hidden="true"></canvas>
 <div class="velo" aria-hidden="true"></div>
 <div class="velo-portada" aria-hidden="true"></div>
+<div class="velo-arriba" aria-hidden="true"></div>
 
 <header class="cabecera">
   <a href="#inicio" aria-label="Clipeya AI Lab, inicio"><img src="img/clipeya_spark_horizontal_oscuro.svg" alt="Clipeya AI Lab" width="107" height="26"></a>
@@ -122,6 +238,8 @@ form.enlace input:focus-visible{outline-offset:2px}
   <a href="#trabajos" aria-label="Una tienda de verdad"></a>
   <a href="#panel" aria-label="El panel de contactos"></a>
   <a href="#presupuestos" aria-label="Presupuestos"></a>
+  <a href="#servicios" aria-label="Servicios y packs"></a>
+  <a href="#como" aria-label="Cómo trabajamos"></a>
   <a href="#empezar" aria-label="Empezar"></a>
 </nav>
 
@@ -129,39 +247,69 @@ form.enlace input:focus-visible{outline-offset:2px}
   <section class="pantalla portada" id="inicio" data-vista="arriba">
     <div class="caja">
       <h1>Tu producto, como de marca grande.</h1>
-      <p class="frase">Páginas de producto, tiendas y CRM, hechas para vender desde el móvil.</p>
+      <p class="frase">Webs, tiendas, CRM, chat y automatizaciones para negocios que venden online.</p>
       <div class="acciones">
         <a class="boton" href="#empezar">Mándanos tu enlace</a>
-        <a class="boton claro" href="#trabajos">Ver trabajos</a>
+        <a class="boton claro" href="#servicios">Ver servicios</a>
       </div>
     </div>
   </section>
 
-  <section class="pantalla" id="trabajos" data-vista="obra:nolessia_pc">
+  <section class="pantalla obra" id="trabajos" data-vista="obra:nolessia_pc">
     <div class="caja">
       <h2>Una tienda de verdad.</h2>
-      <p class="frase">La tienda de Nolessia la hicimos nosotros, pensada para comprar desde el móvil.</p>
+      <p class="frase">Nolessia es nuestra propia tienda, hecha por nosotros y pensada para comprar desde el móvil.</p>
       <p class="pie">Está en vivo: <a href="https://nolessia.com" target="_blank" rel="noopener">nolessia.com</a></p>
     </div>
+    <p class="rotulo" aria-hidden="true">Nolessia<span>tienda en vivo</span></p>
   </section>
 
-  <section class="pantalla" id="panel" data-vista="obra:crm">
+  <section class="pantalla obra" id="panel" data-vista="obra:crm">
     <div class="caja">
       <h2>Cada contacto, en su sitio.</h2>
       <p class="frase">Un panel con el estado de cada contacto, sus notas y lo que toca hacer hoy.</p>
       <p class="pie">Grabación real del panel, con datos de ejemplo.</p>
     </div>
+    <p class="rotulo" aria-hidden="true">Panel de contactos<span>grabación real</span></p>
   </section>
 
-  <section class="pantalla" id="presupuestos" data-vista="obra:presupuesto">
+  <section class="pantalla obra" id="presupuestos" data-vista="obra:presupuesto">
     <div class="caja">
       <h2>Presupuestos que se leen en el móvil.</h2>
       <p class="frase">Siete pantallas en lugar de un PDF: los 3 fallos que vemos en tu tienda, lo que recibes y lo que cuesta.</p>
       <p class="pie">Muestra con un negocio ficticio.</p>
     </div>
+    <p class="rotulo" aria-hidden="true">Presupuesto<span>muestra</span></p>
   </section>
 
-  <section class="pantalla" id="empezar" data-vista="obra:hueco">
+  <section class="pantalla ancha" id="servicios" data-vista="sala:120:1">
+    <div class="caja">
+      <h2>¿Qué negocio tienes?</h2>
+      <p class="frase">Te escriben y no llegas a contestar. La tienda tiene visitas y no vende. Los contactos se pierden entre chats. Elige tu caso: cada uno empieza con una pieza pequeña y, si quieres, sigue con un pack.</p>
+      <!--SERVICIOS:INICIO-->
+<div class="fichas"><div class="cab-fichas" aria-hidden="true"><span>Tu negocio</span><span>Para empezar</span><span>Pack A</span><span>Pack B</span><span></span></div><details class="ficha" name="ficha" id="f-tienda"><summary><span class="nombre">Tienda online</span><span class="col empieza"><span class="oculto">Para empezar: </span>Landing de producto</span><span class="col">Tienda en marcha</span><span class="col">Tienda que crece</span><span class="resumen">Empieza con: landing de producto</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">Vendes un producto físico en tu tienda online o quieres abrirla.</p><div class="packs"><div class="pack"><p class="letra">Pack A</p><h3>Tienda en marcha</h3><p class="uso">Para una tienda nueva o que no convierte.</p><ul><li>Tienda Shopify montada o rehecha, hasta 10 productos, con pagos, envíos y textos legales</li><li>2 landings de producto</li><li>Carritos recuperados por WhatsApp</li></ul><p class="mes"><strong>Cada mes:</strong> tienda vigilada en el móvil, arreglos, informe y 1 página nueva o rehecha.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABTienda%20en%20marcha%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div><div class="pack"><p class="letra">Pack B</p><h3>Tienda que crece</h3><p class="uso">Para una tienda que ya vende y quiere más pedidos por visita.</p><ul><li>Todo lo de «Tienda en marcha»</li><li>ManyChat en Instagram y chatbot de atención</li><li>Panel con tus ventas, carritos y páginas</li></ul><p class="mes"><strong>Cada mes:</strong> todo vigilado, 2 páginas nuevas o rehechas y una revisión contigo.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABTienda%20que%20crece%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div></div><p class="nota">El precio te lo pasamos por WhatsApp, con tu caso delante.</p></div></details><details class="ficha" name="ficha" id="f-curso"><summary><span class="nombre">Curso o academia</span><span class="col empieza"><span class="oculto">Para empezar: </span>Landing de captación</span><span class="col">Embudo de captación</span><span class="col">Webinar o vídeo de venta</span><span class="resumen">Empieza con: landing de captación</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">Vendes un curso, una mentoría o una formación y necesitas llamadas o registros.</p><div class="packs"><div class="pack"><p class="letra">Pack A</p><h3>Embudo de captación</h3><p class="uso">Para quien tiene audiencia y no la convierte en contactos.</p><ul><li>Página de registro y página de gracias</li><li>ManyChat que entrega el regalo y recoge el contacto</li><li>CRM con fases de venta y avisos a tu equipo</li></ul><p class="mes"><strong>Cada mes:</strong> embudo vigilado, arreglos, cambios pequeños e informe.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABEmbudo%20de%20captaci%C3%B3n%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div><div class="pack"><p class="letra">Pack B</p><h3>Webinar o vídeo de venta</h3><p class="uso">Para quien lanza con directo o con vídeo de venta y agenda de llamadas.</p><ul><li>Todo lo de «Embudo de captación»</li><li>Páginas de confirmación, venta y repetición</li><li>Recordatorios y seguimiento de cada contacto</li><li>Panel de registros, asistencia, llamadas y ventas</li></ul><p class="mes"><strong>Cada mes:</strong> todo vigilado, 1 lanzamiento preparado contigo y una revisión.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABWebinar%20o%20v%C3%ADdeo%20de%20venta%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div></div><p class="nota">El precio te lo pasamos por WhatsApp, con tu caso delante.</p></div></details><details class="ficha" name="ficha" id="f-marca"><summary><span class="nombre">Marca personal</span><span class="col empieza"><span class="oculto">Para empezar: </span>Tu página de enlace</span><span class="col">Tu enlace vende</span><span class="col">Sistema de contactos</span><span class="resumen">Empieza con: tu página de enlace</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">Tienes seguidores y quieres que cada publicación traiga conversaciones.</p><div class="packs"><div class="pack"><p class="letra">Pack A</p><h3>Tu enlace vende</h3><p class="uso">Para quien publica y los contactos se pierden.</p><ul><li>Página personal y landing de captación</li><li>ManyChat: comentan una palabra y reciben el recurso por privado</li><li>Lista de contactos ordenada</li></ul><p class="mes"><strong>Cada mes:</strong> todo vigilado y cambio de palabra y recurso en 2 publicaciones.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABTu%20enlace%20vende%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div><div class="pack"><p class="letra">Pack B</p><h3>Sistema de contactos</h3><p class="uso">Para quien ya recibe mensajes y quiere vender un servicio o un producto.</p><ul><li>Todo lo de «Tu enlace vende»</li><li>Embudo con regalo de entrada y seguimiento</li><li>CRM con fases y agenda de llamadas</li><li>Panel de contactos por publicación</li></ul><p class="mes"><strong>Cada mes:</strong> todo vigilado, 1 automatización nueva y una revisión contigo.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABSistema%20de%20contactos%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div></div><p class="nota">El precio te lo pasamos por WhatsApp, con tu caso delante.</p></div></details><details class="ficha" name="ficha" id="f-agencia"><summary><span class="nombre">Agencia</span><span class="col empieza"><span class="oculto">Para empezar: </span>Una landing para un cliente tuyo</span><span class="col">Equipo 5</span><span class="col">Equipo 10</span><span class="resumen">Empieza con: una landing para un cliente tuyo</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">Tienes clientes y necesitas un equipo que entregue con tu nombre.</p><div class="packs"><div class="pack"><p class="letra">Pack A</p><h3>Equipo 5</h3><p class="uso">Hasta 5 piezas al mes.</p><ul><li>5 piezas al mes: landings, páginas de tienda o automatizaciones</li><li>Entrega con tu marca, sin la nuestra</li><li>Canal directo y plazo de 3 días por pieza</li><li>Informe mensual que puedes reenviar a tu cliente</li></ul><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABEquipo%205%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div><div class="pack"><p class="letra">Pack B</p><h3>Equipo 10</h3><p class="uso">Hasta 10 piezas al mes.</p><ul><li>10 piezas al mes</li><li>Embudos completos y CRM, contados como 3 piezas</li><li>Prioridad en la cola y revisión semanal contigo</li><li>Todo lo de «Equipo 5»</li></ul><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABEquipo%2010%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div></div><p class="nota">El precio te lo pasamos por WhatsApp, con tu caso delante.</p></div></details><details class="ficha" name="ficha" id="f-tareas"><summary><span class="nombre">Automatizar tareas</span><span class="col empieza"><span class="oculto">Para empezar: </span>Una tarea repetida, en automático</span><span class="col">Tareas en automático</span><span class="col">Negocio en automático</span><span class="resumen">Empieza con: una tarea repetida, en automático</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">Tu equipo pierde horas en tareas que se repiten cada día.</p><div class="packs"><div class="pack"><p class="letra">Pack A</p><h3>Tareas en automático</h3><p class="uso">Para quitarte lo que más tiempo te come.</p><ul><li>3 automatizaciones de tareas repetidas</li><li>Avisos al equipo cuando pasa algo importante</li><li>Informe automático cada mes con tus números</li></ul><p class="mes"><strong>Cada mes:</strong> vigilancia, arreglo cuando una herramienta cambia e informe.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABTareas%20en%20autom%C3%A1tico%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div><div class="pack"><p class="letra">Pack B</p><h3>Negocio en automático</h3><p class="uso">Para que el día a día funcione sin estar encima.</p><ul><li>Todo lo de «Tareas en automático»</li><li>Recordatorios por SMS o WhatsApp de citas, directos y pagos</li><li>Manual de operación paso a paso de tu proceso</li></ul><p class="mes"><strong>Cada mes:</strong> todo vigilado, 1 automatización nueva y una revisión contigo.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABNegocio%20en%20autom%C3%A1tico%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div></div><p class="nota">El precio te lo pasamos por WhatsApp, con tu caso delante.</p></div></details><details class="ficha" name="ficha" id="f-chat"><summary><span class="nombre">Conversaciones</span><span class="col empieza"><span class="oculto">Para empezar: </span>Comentan una palabra y reciben el recurso</span><span class="col">Responde solo</span><span class="col">Chat que vende</span><span class="resumen">Empieza con: comentan una palabra y reciben el recurso</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">Te escriben por Instagram, WhatsApp o la web y no llegas a contestar a todos.</p><div class="packs"><div class="pack"><p class="letra">Pack A</p><h3>Responde solo</h3><p class="uso">Para no dejar a nadie sin respuesta.</p><ul><li>ManyChat, del comentario al contacto guardado</li><li>Chatbot de atención en web o WhatsApp que pasa a una persona lo que no sabe</li><li>Lista de contactos ordenada</li></ul><p class="mes"><strong>Cada mes:</strong> conversaciones vigiladas, respuestas nuevas, ajustes e informe.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABResponde%20solo%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div><div class="pack"><p class="letra">Pack B</p><h3>Chat que vende</h3><p class="uso">Para que la conversación acabe en cita o en compra.</p><ul><li>Todo lo de «Responde solo»</li><li>Chat que cualifica al contacto y agenda la llamada</li><li>Agenda conectada y recordatorios antes de la cita</li></ul><p class="mes"><strong>Cada mes:</strong> todo vigilado, 1 flujo nuevo y una revisión contigo.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABChat%20que%20vende%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div></div><p class="nota">El precio te lo pasamos por WhatsApp, con tu caso delante.</p></div></details><details class="ficha" name="ficha" id="f-crm"><summary><span class="nombre">CRM y medición</span><span class="col empieza"><span class="oculto">Para empezar: </span>Agenda de llamadas conectada</span><span class="col">Contactos en orden</span><span class="col">Todo medido</span><span class="resumen">Empieza con: agenda de llamadas conectada</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">No sabes cuántos contactos entran, quién los lleva ni de dónde vienen las ventas.</p><div class="packs"><div class="pack"><p class="letra">Pack A</p><h3>Contactos en orden</h3><p class="uso">Para dejar de perder contactos.</p><ul><li>CRM con fases de venta, etiquetas y avisos</li><li>Agenda de llamadas conectada</li><li>2 automatizaciones de seguimiento</li></ul><p class="mes"><strong>Cada mes:</strong> CRM vigilado, orden, arreglos e informe.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABContactos%20en%20orden%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div><div class="pack"><p class="letra">Pack B</p><h3>Todo medido</h3><p class="uso">Para decidir con números y no a ojo.</p><ul><li>Todo lo de «Contactos en orden»</li><li>Panel con contactos, llamadas, ventas y anuncios en una pantalla</li><li>Panel comercial por persona: qué cierra cada vendedor y de qué fuente</li><li>Informe automático cada semana</li></ul><p class="mes"><strong>Cada mes:</strong> panel y CRM vigilados, mejoras pequeñas y una revisión contigo.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20me%20interesa%20el%20pack%20%C2%ABTodo%20medido%C2%BB%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Quiero este pack</a></div></div><p class="nota">El precio te lo pasamos por WhatsApp, con tu caso delante.</p></div></details><details class="ficha" name="ficha" id="f-suelto"><summary><span class="nombre">Algo suelto</span><span class="col empieza">Una pieza o un añadido</span><span class="col">Sin pack</span><span class="col"></span><span class="resumen">Una pieza o un añadido, sin pack</span><span class="mas" aria-hidden="true"></span></summary><div class="detalle"><p class="para">Si no encajas en ningún pack y quieres una pieza o un añadido.</p><div class="sueltos"><div class="grupo"><h3>Páginas y tiendas</h3><ul><li>Landing o página de producto <span class="cifra">100 €</span></li><li>Tienda Shopify montada o rehecha</li><li>Página personal o de enlaces</li><li>Cuidado mensual de la web o tienda</li></ul></div><div class="grupo"><h3>Embudos</h3><ul><li>Embudo de captación con regalo</li><li>Embudo de vídeo de venta</li><li>Embudo de webinar en directo</li><li>Agenda de llamadas conectada</li></ul></div><div class="grupo"><h3>Conversaciones</h3><ul><li>Comentan una palabra y reciben el recurso</li><li>Chat que cualifica y agenda</li><li>Carritos recuperados por WhatsApp</li><li>Chatbot de atención</li><li>Recordatorios por SMS o WhatsApp</li></ul></div><div class="grupo"><h3>Procesos y paneles</h3><ul><li>Automatización de una tarea repetida</li><li>Informe automático semanal o mensual</li><li>Manual de operación paso a paso</li><li>CRM con fases de venta</li><li>Panel de medición</li><li>Panel comercial por persona</li></ul></div><div class="grupo"><h3>Para agencias y a medida</h3><ul><li>Radar de clientes: 50 negocios con sus 3 fallos y un mensaje para cada uno</li><li>App o asistente con IA para tu negocio</li><li>Anuncios y creatividades</li></ul></div></div><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20quiero%20una%20pieza%20suelta%20de%20Clipeya.%20Mi%20enlace%20es%3A%20" target="_blank" rel="noopener">Pedir una pieza</a></div></details></div><div class="llevado"><h3>Todo llevado</h3><p>Cuando lleves 2 meses con un pack, si quieres, te llevamos entera la parte digital: piezas nuevas cada mes a elegir contigo, una reunión al mes con las cifras y arreglos en el día por WhatsApp.</p><a class="boton claro" href="https://wa.me/34600235411?text=Hola%2C%20quiero%20hablar%20de%20%C2%ABTodo%20llevado%C2%BB%20con%20Clipeya." target="_blank" rel="noopener">Quiero hablar de Todo llevado</a></div>
+      <!--SERVICIOS:FIN-->
+    </div>
+  </section>
+
+  <section class="pantalla ancha" id="como" data-vista="sala:200:0">
+    <div class="caja">
+      <h2>Así trabajamos.</h2>
+      <ol class="pasos">
+        <li><h3>Nos mandas tu enlace</h3><p>Lo miramos en el móvil, como lo ve tu cliente.</p></li>
+        <li><h3>Te decimos qué falla</h3><p>Y qué pieza o qué pack te toca, por WhatsApp y con tu caso delante.</p></li>
+        <li><h3>Pagas el inicio y empezamos</h3><p>Una página de producto, lista en 3 días.</p></li>
+        <li><h3>Cada mes, lo cuidamos</h3><p>Vigilamos, arreglamos y mejoramos lo que entregamos.</p></li>
+      </ol>
+      <p class="siempre"><strong>Siempre:</strong> sin permanencia. Lo que entregamos es tuyo y tus cuentas siguen a tu nombre. Los anuncios, las cuotas de las herramientas y el coste de los mensajes van aparte. Precios sin IVA. No prometemos cifras de ventas.</p>
+      <div class="somos">
+        <img src="img/clipeya_spark_favicon.svg" alt="" width="44" height="44">
+        <p><strong>Somos Gerard y Andy.</strong> Clipeya AI Lab es nuestro estudio, y todo lo que has visto en la pared lo hicimos nosotros.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pantalla obra" id="empezar" data-vista="obra:hueco">
     <div class="caja">
       <h2>Aquí va tu tienda.</h2>
       <p class="frase">Mándanos tu enlace y te devolvemos 3 capturas de lo que ve tu cliente en el móvil. Gratis.</p>
@@ -171,7 +319,17 @@ form.enlace input:focus-visible{outline-offset:2px}
         <button class="boton" type="submit">Enviar por WhatsApp</button>
       </form>
       <p class="error" id="error-enlace" hidden>Pega un enlace (empieza por http, www o @).</p>
-      <p class="pie">Una página de producto cuesta 100 € y está lista en 3 días. Precios sin IVA. Somos Gerard y Andy.</p>
+      <a class="otra" href="https://wa.me/34600235411?text=Hola%2C%20quiero%20hablar%20con%20Clipeya." target="_blank" rel="noopener">Prefiero escribiros</a>
+      <p class="pie">Una página de producto cuesta 100 € y está lista en 3 días. Precios sin IVA.</p>
+      <div class="dudas">
+        <h3>Dudas, resueltas.</h3>
+        <details class="duda" name="duda"><summary>¿Cuánto tarda una página?</summary><p>Una página de producto para el móvil, en 3 días. En agencias, 3 días por pieza.</p></details>
+        <details class="duda" name="duda"><summary>¿La web es mía?</summary><p>Sí. Todo lo que entregamos es tuyo y tus cuentas siguen a tu nombre.</p></details>
+        <details class="duda" name="duda"><summary>¿Y si quiero parar?</summary><p>No hay permanencia. Si paras, terminamos de entregarte el mes que ya has pagado.</p></details>
+        <details class="duda" name="duda"><summary>¿Qué pago aparte?</summary><p>Los anuncios, las cuotas de las herramientas y el coste de los mensajes. Los precios van sin IVA.</p></details>
+        <details class="duda" name="duda"><summary>¿Cuándo se paga?</summary><p>Por adelantado: el inicio antes de empezar y cada mes al comenzarlo.</p></details>
+        <details class="duda" name="duda"><summary>¿Me prometéis ventas?</summary><p>No. Te entregamos lo acordado y lo vigilamos cada mes, pero no prometemos cifras de ventas.</p></details>
+      </div>
     </div>
   </section>
 </main>
@@ -181,6 +339,7 @@ form.enlace input:focus-visible{outline-offset:2px}
   document.documentElement.classList.add('js', 'en-portada');
   const secciones = [...document.querySelectorAll('[data-vista]')];
   const marcas = [...document.querySelectorAll('.avance a')];
+  // una franja a media pantalla (30 % del alto): sirve para secciones más altas que la pantalla y no se salta con un scroll rápido
   const vigia = new IntersectionObserver((entradas) => {
     for (const e of entradas) {
       if (!e.isIntersecting) continue;
@@ -189,7 +348,7 @@ form.enlace input:focus-visible{outline-offset:2px}
       marcas.forEach((m, k) => m.setAttribute('aria-current', String(k === i)));
       document.documentElement.classList.toggle('en-portada', i === 0);
     }
-  }, { threshold: 0.45 });
+  }, { rootMargin: '-35% 0px -35% 0px', threshold: 0 });
   secciones.forEach((s) => vigia.observe(s));
   setTimeout(() => secciones[0].classList.add('visto'), 60);
 

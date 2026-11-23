@@ -108,11 +108,18 @@ async function arrancar(renderer) {
       const inicio = ang + huecoAng / 2;
       const segs = Math.max(6, Math.ceil(len * 28));
       const mat = new THREE.MeshBasicMaterial({ map: textura(id), side: THREE.BackSide, color: new THREE.Color(0.8, 0.8, 0.8) });
+      // desenfoque barato de lo que no es el foco: sesgo de mipmap en el muestreo de la textura (sin postproceso)
+      const desenfoque = { value: 0 };
+      mat.onBeforeCompile = (s) => {
+        s.uniforms.uDes = desenfoque;
+        s.fragmentShader = 'uniform float uDes;\n' + s.fragmentShader.replace('#include <map_fragment>',
+          THREE.ShaderChunk.map_fragment.replace('texture2D( map, vMapUv )', 'texture2D( map, vMapUv, uDes )'));
+      };
       const cara = new THREE.Mesh(new THREE.CylinderGeometry(R, R, ALTO, segs, 1, true, inicio, len), mat);
       const dorso = new THREE.Mesh(new THREE.CylinderGeometry(R + 0.05, R + 0.05, ALTO, segs, 1, true, inicio, len), matDorso);
       cara.position.y = dorso.position.y = y;
       anillo.add(cara, dorso);
-      paneles.push({ id, fila, mat, centro: inicio + len / 2, y, ancho: anchos[i], brillo: 0.8 });
+      paneles.push({ id, fila, mat, cara, desenfoque, centro: inicio + len / 2, y, ancho: anchos[i], brillo: 0.8 });
       ang += len + huecoAng;
     });
   }
@@ -124,13 +131,20 @@ async function arrancar(renderer) {
     const v = document.createElement('video');
     Object.assign(v, { src: OBRAS[id].video, muted: true, loop: true, playsInline: true, preload: 'auto', crossOrigin: 'anonymous' });
     v.setAttribute('playsinline', '');
-    v.addEventListener('loadeddata', () => {
+    v.dataset.id = id;
+    // el cartel se queda hasta que el vídeo tiene un fotograma de verdad (si no, el panel sale negro)
+    let puesto = false;
+    const poner = () => {
+      if (puesto) return; puesto = true;
       const tv = voltear(new THREE.VideoTexture(v));
       paneles.filter((p) => p.id === id).forEach((p) => { p.mat.map = tv; p.mat.needsUpdate = true; });
-    }, { once: true });
+    };
+    if (paraVideo) v.addEventListener('seeked', poner, { once: true });
+    else if ('requestVideoFrameCallback' in v) v.requestVideoFrameCallback(poner);
+    else v.addEventListener('playing', poner, { once: true });
     videos.push(v);
   }
-  const reproducir = () => { if (!paraVideo) videos.forEach((v) => v.play().catch(() => {})); };
+  const reproducir = () => { if (!paraVideo) { empezado = true; videos.forEach((v) => v.play().catch(() => {})); } };
 
   // ---------- suelo, chispa y polvo ----------
   function canvasRadial(tam, paradas) {
@@ -152,6 +166,14 @@ async function arrancar(renderer) {
   const raya = new THREE.Mesh(new THREE.RingGeometry(R - 0.03, R + 0.03, 128), new THREE.MeshBasicMaterial({ color: acentoRGB, transparent: true, opacity: 0.45 }));
   raya.rotation.x = -Math.PI / 2; raya.position.y = 0.02;
   escena.add(raya);
+
+  // halo de acento detrás de la obra enfocada: asoma por los bordes (1 malla, mezcla aditiva)
+  const halo = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ map: canvasRadial(256, [[0, rgba(0.55)], [0.5, rgba(0.16)], [1, rgba(0)]]), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })
+  );
+  escena.add(halo);
+  let haloDe = null;
 
   function texturaChispa() {
     const c = document.createElement('canvas'); c.width = c.height = 512;
@@ -188,11 +210,20 @@ async function arrancar(renderer) {
       if (movil) return { pos: new V3(0, 15.5, 12.5), tgt: new V3(0, -2.6, 0), orbita: 1, foco: null };
       return { pos: new V3(0, 12.5, 10.5), tgt: new V3(0, 1.2, 0), orbita: 1, foco: null };
     }
-    const id = clave.split(':')[1];
-    const p = paneles.find((x) => x.id === id && x.fila === 0);
+    const partes = clave.split(':');
+    if (partes[0] === 'sala') {
+      // dentro del anillo, casi en el centro, mirando a un tramo de pared: ninguna obra en foco, el texto manda
+      const a = THREE.MathUtils.degToRad(+partes[1] || 0);
+      const y = FILAS[+partes[2] || 0];
+      const dir = new V3(Math.sin(a), 0, Math.cos(a));
+      return { pos: new V3(-dir.x * 1.6, y + 0.2, -dir.z * 1.6), tgt: new V3(dir.x * R, y - (movil ? 1.2 : 0.1), dir.z * R), orbita: 0, foco: null };
+    }
+    const id = partes[1];
+    const filaQuiero = +partes[2] || 0;
+    const p = paneles.find((x) => x.id === id && x.fila === filaQuiero) || paneles.find((x) => x.id === id);
     // móvil: la obra arriba (mitad superior) y el texto debajo; ordenador: la obra a la derecha y el texto a la izquierda
     const necesitoAlto = (ALTO * (movil ? 2.3 : 1.6)) / (2 * tanV);
-    const necesitoAncho = (p.ancho * (movil ? 1.15 : 2.2)) / (2 * tanV * asp);
+    const necesitoAncho = (p.ancho * (movil ? 1.15 : 2.0)) / (2 * tanV * asp);
     const d = Math.min(Math.max(necesitoAlto, necesitoAncho), R * 1.75);
     const dir = new V3(Math.sin(p.centro), 0, Math.cos(p.centro));
     const centro = new V3(dir.x * R, p.y, dir.z * R);
@@ -204,11 +235,11 @@ async function arrancar(renderer) {
       tgt = centro.clone();
       tgt.y = p.y - 0.36 * adelante.length() * tanV; // centro de la obra al 32 % desde arriba
     } else {
-      const alfa = Math.atan(0.36 * tanV * asp); // centro de la obra al 68 % del ancho
+      const alfa = Math.atan(0.33 * tanV * asp); // centro de la obra al 67 % del ancho; el texto, en el 36 % de la izquierda
       tgt = posi.clone().add(adelante.applyAxisAngle(new V3(0, 1, 0), alfa));
       tgt.y = p.y - 0.04;
     }
-    return { pos: posi, tgt, orbita: 0, foco: id };
+    return { pos: posi, tgt, orbita: 0, foco: id, fila: p.fila };
   }
 
   function medir() {
@@ -234,13 +265,18 @@ async function arrancar(renderer) {
     for (let k = 0; k < secciones.length; k++) if (secciones[k].offsetTop <= y + 1) i = k;
     const j = Math.min(i + 1, secciones.length - 1);
     const a = secciones[i].offsetTop, b = secciones[j].offsetTop;
-    const t = j === i ? 0 : pinza((y - a) / (b - a));
+    // en una sección más alta que la pantalla, la cámara se queda quieta en su obra y solo viaja en la última pantalla
+    const tramo = Math.min(b - a, innerHeight);
+    const t = j === i ? 0 : pinza((y - (b - tramo)) / tramo);
     const e = suave(pinza((t - 0.12) / 0.76));
     const A = vistas[i], B = vistas[j];
     objetivo.pos.lerpVectors(A.pos, B.pos, e);
     objetivo.tgt.lerpVectors(A.tgt, B.tgt, e);
     objetivo.orbita = A.orbita + (B.orbita - A.orbita) * e;
-    objetivo.foco = e < 0.5 ? A.foco : B.foco;
+    const deB = e >= 0.5;
+    objetivo.foco = deB ? B.foco : A.foco;
+    objetivo.fila = (deB ? B.fila : A.fila) || 0;
+    objetivo.e = e;
   }
 
   const puntero = { x: 0, y: 0 };
@@ -251,7 +287,7 @@ async function arrancar(renderer) {
   calcularObjetivo();
   const actual = { pos: objetivo.pos.clone(), tgt: objetivo.tgt.clone() };
   const reloj = new THREE.Clock();
-  let giro = 0, primero = true;
+  let giro = 0, primero = true, cuenta = 0, empezado = false, entrada = -1;
   const eje = new V3(0, 1, 0), derecha = new V3(), arriba = new V3(), mira = new V3(), tmp = new V3();
 
   function cuadro(pasoFijo) {
@@ -259,7 +295,9 @@ async function arrancar(renderer) {
     calcularObjetivo();
     if (!quieto) giro += dt * 0.045 * objetivo.orbita;
     const pos = tmp.copy(objetivo.pos).applyAxisAngle(eje, giro * objetivo.orbita);
-    const k = quieto || primero ? 1 : 1 - Math.exp(-dt * 3.2);
+    // la entrada (cámara que baja al cargar) va más despacio que los viajes entre obras
+    const lento = entrada >= 0 && reloj.elapsedTime - entrada < 2.6;
+    const k = quieto || primero ? 1 : 1 - Math.exp(-dt * (lento ? 1.5 : 3.2));
     actual.pos.lerp(pos, k);
     actual.tgt.lerp(objetivo.tgt, k);
     primero = false;
@@ -271,10 +309,34 @@ async function arrancar(renderer) {
       camara.lookAt(mira);
     }
     const dentro = 1 - objetivo.orbita;
+    const suaviza = quieto ? 1 : 1 - Math.exp(-dt * 4);
+    let enFoco = null;
     for (const p of paneles) {
-      const quiero = p.id === objetivo.foco && p.fila === 0 && dentro > 0.5 ? 1 : 0.85 - 0.5 * dentro;
-      p.brillo += (quiero - p.brillo) * (quieto ? 1 : 1 - Math.exp(-dt * 4));
+      const esFoco = p.id === objetivo.foco && p.fila === objetivo.fila && dentro > 0.5;
+      if (esFoco) enFoco = p;
+      const quiero = esFoco ? 1 : 0.85 - 0.62 * dentro; // dentro, lo que no es foco baja al 23 %: el texto se lee y la obra destaca
+      p.brillo += (quiero - p.brillo) * suaviza;
       p.mat.color.setScalar(p.brillo);
+      const des = esFoco ? 0 : 2.2 * dentro;
+      p.desenfoque.value += (des - p.desenfoque.value) * suaviza;
+    }
+    // halo detrás de la obra enfocada
+    if (enFoco && enFoco !== haloDe) {
+      haloDe = enFoco;
+      const r = R + 0.14;
+      halo.position.set(Math.sin(enFoco.centro) * r, enFoco.y, Math.cos(enFoco.centro) * r);
+      halo.scale.set(enFoco.ancho * 1.75, ALTO * 1.9, 1);
+      halo.lookAt(0, enFoco.y, 0);
+    }
+    const haloQuiero = enFoco ? 0.9 : 0;
+    halo.material.opacity += (haloQuiero - halo.material.opacity) * suaviza;
+    // vídeos: solo se decodifica el que se ve (o los dos desde fuera)
+    if (!paraVideo && !document.hidden && (cuenta = (cuenta + 1) % 15) === 0) {
+      for (const v of videos) {
+        const quiero = objetivo.orbita > 0.5 || v.dataset.id === objetivo.foco;
+        if (quiero && v.paused && empezado) v.play().catch(() => {});
+        else if (!quiero && !v.paused) v.pause();
+      }
     }
     chispa.material.rotation += quieto ? 0 : dt * 0.25;
     chispa.material.opacity = Math.pow(pinza((objetivo.orbita - 0.55) / 0.45), 2); // solo desde fuera: dentro se cruzaría delante de la cámara
@@ -284,6 +346,12 @@ async function arrancar(renderer) {
   }
 
   gestor.onLoad = () => {
+    if (!quieto && !paraVideo && scrollY < 10) {
+      // entrada: la cámara empieza más arriba y baja hasta la portada mientras aparece el lienzo
+      actual.pos.copy(objetivo.pos).add(new V3(0, 16, 14));
+      actual.tgt.copy(objetivo.tgt).add(new V3(0, -5, 0));
+      entrada = reloj.elapsedTime;
+    }
     lienzo.classList.add('lista');
     document.getElementById('respaldo').style.visibility = 'hidden';
     setTimeout(reproducir, 600);
